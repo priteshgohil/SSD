@@ -11,6 +11,7 @@ dist/
 *.pth
 *.pkl
 *.npy
+*.pt
 
 # ipython/jupyter notebooks
 *.ipynb
@@ -25,3 +26,6 @@ dist/
 # Pycharm editor settings
 .idea
 .DS_Store
+
+# Ignore dataset
+datasets/*
