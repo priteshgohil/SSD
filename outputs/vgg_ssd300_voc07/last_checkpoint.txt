@@ -1,1 +1,1 @@
-outputs/vgg_ssd300_voc07/model_007500.pth
+outputs/vgg_ssd300_voc07/model_final.pth

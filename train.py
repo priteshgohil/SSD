@@ -55,7 +55,7 @@ def main():
         type=str,
     )
     parser.add_argument("--local_rank", type=int, default=0)
-    parser.add_argument('--log_step', default=10, type=int, help='Print logs every log_step')
+    parser.add_argument('--log_step', default=1, type=int, help='Print logs every log_step')
     parser.add_argument('--save_step', default=2500, type=int, help='Save checkpoint every save_step')
     parser.add_argument('--eval_step', default=2500, type=int, help='Evaluate dataset every eval_step, disabled when eval_step < 0')
     parser.add_argument('--use_tensorboard', default=True, type=str2bool)
@@ -93,7 +93,7 @@ def main():
         mkdir(cfg.OUTPUT_DIR)
 
     logger = setup_logger("SSD", dist_util.get_rank(), cfg.OUTPUT_DIR)
-    logger.info("Using {} GPUs".format(num_gpus))
+    logger.info("Using {} {}s ".format(num_gpus,cfg.MODEL.DEVICE))
     logger.info(args)
 
     logger.info("Loaded configuration file {}".format(args.config_file))
