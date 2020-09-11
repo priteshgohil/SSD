@@ -130,16 +130,21 @@ def do_train(cfg, model,
                 )
             if summary_writer:
                 global_step = iteration
-                summary_writer.add_scalar('losses/total_loss', losses_reduced, global_step=global_step)
+                summary_writer.add_scalar('train_losses/total_loss', losses_reduced, global_step=global_step)
                 for loss_name, loss_item in loss_dict_reduced.items():
-                    summary_writer.add_scalar('losses/{}'.format(loss_name), loss_item, global_step=global_step)
+                    summary_writer.add_scalar('train_losses/{}'.format(loss_name), loss_item, global_step=global_step)
                 summary_writer.add_scalar('lr', optimizer.param_groups[0]['lr'], global_step=global_step)
 
         if iteration % args.save_step == 0:
-            checkpointer.save("model_{:06d}".format(iteration), **arguments)
+            # checkpointer.save("model_{:06d}".format(iteration), **arguments)
+            checkpointer.save("model_last", **arguments)
 
         if args.eval_step > 0 and iteration % args.eval_step == 0 and not iteration == max_iter:
-            eval_results = do_evaluation(cfg, model, distributed=args.distributed, iteration=iteration)
+            if summary_writer:
+                eval_results = do_evaluation(cfg, model, distributed=args.distributed, summary_writer=summary_writer, iteration=iteration)
+            else:
+                eval_results = do_evaluation(cfg, model, distributed=args.distributed, iteration=iteration)
+
             if dist_util.get_rank() == 0 and summary_writer:
                 for eval_result, dataset in zip(eval_results, cfg.DATASETS.TEST):
                     write_metric(eval_result['metrics'], 'metrics/' + dataset, summary_writer, iteration)

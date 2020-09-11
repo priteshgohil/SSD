@@ -114,7 +114,7 @@ class ToAbsoluteCoords(object):
 
         return image, boxes, labels
 
-
+# Normalize BBox Cords
 class ToPercentCoords(object):
     def __call__(self, image, boxes=None, labels=None):
         height, width, channels = image.shape
@@ -371,7 +371,7 @@ class Expand(object):
 
         return image, boxes, labels
 
-
+# Flip right-left randomly
 class RandomMirror(object):
     def __call__(self, image, boxes, classes):
         _, width, _ = image.shape

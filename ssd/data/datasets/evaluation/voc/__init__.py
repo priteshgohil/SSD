@@ -28,7 +28,6 @@ def voc_evaluation(dataset, predictions, output_dir, iteration=None):
         prediction = predictions[i]
         prediction = prediction.resize((img_info['width'], img_info['height'])).numpy()
         boxes, labels, scores = prediction['boxes'], prediction['labels'], prediction['scores']
-
         pred_boxes_list.append(boxes)
         pred_labels_list.append(labels)
         pred_scores_list.append(scores)

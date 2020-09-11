@@ -23,13 +23,17 @@ class BatchCollator:
                 {key: default_collate([d[key] for d in list_targets]) for key in list_targets[0]}
             )
         else:
-            targets = None
+            #targets = None
+            list_targets = transposed_batch[1]
+            targets = Container(
+                {key: default_collate([d[key] for d in list_targets]) for key in list_targets[0]}
+            )
         return images, targets, img_ids
 
 
 def make_data_loader(cfg, is_train=True, distributed=False, max_iter=None, start_iter=0):
     train_transform = build_transforms(cfg, is_train=is_train)
-    target_transform = build_target_transform(cfg) if is_train else None
+    target_transform = build_target_transform(cfg) #if is_train else None
     dataset_list = cfg.DATASETS.TRAIN if is_train else cfg.DATASETS.TEST
     datasets = build_dataset(dataset_list, transform=train_transform, target_transform=target_transform, is_train=is_train)
 

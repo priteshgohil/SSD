@@ -76,25 +76,13 @@ def run_demo(cfg, ckpt, score_threshold, images_dir, output_dir, dataset_type):
 
 def main():
     parser = argparse.ArgumentParser(description="SSD Demo.")
-    parser.add_argument(
-        "--config-file",
-        default="",
-        metavar="FILE",
-        help="path to config file",
-        type=str,
-    )
+    parser.add_argument("--config-file", type=str, default="", metavar="FILE", help="path to config file")
     parser.add_argument("--ckpt", type=str, default=None, help="Trained weights.")
     parser.add_argument("--score_threshold", type=float, default=0.7)
-    parser.add_argument("--images_dir", default='demo', type=str, help='Specify a image dir to do prediction.')
-    parser.add_argument("--output_dir", default='demo/result', type=str, help='Specify a image dir to save predicted images.')
+    parser.add_argument("--images_dir", type=str, default='demo', help='Specify a image dir to do prediction.')
+    parser.add_argument("--output_dir", type=str, default='demo/result', help='Specify a image dir to save predicted images.')
     parser.add_argument("--dataset_type", default="voc", type=str, help='Specify dataset type. Currently support voc and coco.')
-
-    parser.add_argument(
-        "opts",
-        help="Modify config options using the command-line",
-        default=None,
-        nargs=argparse.REMAINDER,
-    )
+    parser.add_argument("opts", default=None, nargs=argparse.REMAINDER, help="Modify config options using the command-line")
     args = parser.parse_args()
     print(args)
 
