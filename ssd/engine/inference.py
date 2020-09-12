@@ -15,8 +15,6 @@ from ssd.data.datasets.evaluation import evaluate
 from ssd.utils import dist_util, mkdir
 from ssd.utils.dist_util import synchronize, is_main_process
 
-#from ssd.engine.trainer import reduce_loss_dict
-
 def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
     all_predictions = dist_util.all_gather(predictions_per_gpu)
     if not dist_util.is_main_process():
@@ -43,15 +41,11 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
     results_dict = {}
     all_loss_dict = {}
     total_loss=[]
-    # cls_loss=[]
-    # reg_loss=[]
     logger = logging.getLogger("SSD.inference")
     start_eval_time = time.time()  # Record evaluation time
     for i, batch in enumerate(tqdm(data_loader)):
         # per_iteration_time = time.time()
         images, targets, image_ids = batch
-        print("engine/inference.py: img size from dataloader {}".format(images.shape))
-        print("engine/inference.py: targets from dataloader {}".format(targets))
         cpu_device = torch.device("cpu")
         with torch.no_grad():
             outputs, loss_dict = model(images.to(device), targets=targets.to(device))
@@ -69,31 +63,17 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
         total_loss.append(l_reduced)
         for key, value in l_dict_reduced.items():
             all_loss_dict[key].append(value)
-        # cls_loss.append(l_dict_reduced['cls_loss'])
-        # reg_loss.append(l_dict_reduced['reg_loss'])
-        # print("Debug: l_dict_reduced {}".format(l_dict_reduced))
         results_dict.update(
             {img_id: result for img_id, result in zip(image_ids, outputs)}
         )
-    # print("Debug: all_loss_dict {}".format(all_loss_dict))
-    # print("Debug: sum of all_loss_dict {}/{}".format(sum(all_loss_dict['reg_loss']), len(all_loss_dict['reg_loss'])))
     total_eval_time = int(time.time() - start_eval_time)
     total_time_str = str(datetime.timedelta(seconds=total_eval_time))
-    logger.info("Total inference time: {} (Avg. {:.4f} s / it)".format(total_time_str, total_eval_time / i+1))
+    logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, total_eval_time / i+1, i+1))
     if summary_writer:
         global_step = iteration
         summary_writer.add_scalar('val_losses/total_loss', sum(total_loss) / len(total_loss), global_step=global_step)
         for loss_name, loss_item in all_loss_dict.items():
             summary_writer.add_scalar('val_losses/{}'.format(loss_name), sum(loss_item)/len(loss_item), global_step=global_step)
-    # print("total_losses: {} \nSum: {} entries: {}".format(total_loss,sum(total_loss),len(total_loss)))
-    # print("loss: {}".format(loss))
-    # print("final loss_dict: {}".format(loss_dict))
-    # # Log losses
-    # if summary_writer:
-    #     global_step = iteration
-    #     summary_writer.add_scalar('val_losses/total_loss', sum(total_loss)/len(total_loss), global_step=global_step)
-    #     summary_writer.add_scalar('val_losses/cls_loss', sum(cls_loss) / len(cls_loss), global_step=global_step)
-    #     summary_writer.add_scalar('val_losses/reg_loss', sum(total_loss) / len(total_loss), global_step=global_step)
     return results_dict
 
 

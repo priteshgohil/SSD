@@ -1,3 +1,5 @@
+# Ignore output txt files
+**/inference/*
 # compilation and distribution
 __pycache__
 *.pyc
