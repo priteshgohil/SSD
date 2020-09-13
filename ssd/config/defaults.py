@@ -5,8 +5,8 @@ _C = CN()
 
 _C.MODEL = CN()
 _C.MODEL.META_ARCHITECTURE = 'SSDDetector'
-_C.MODEL.DEVICE = "cuda"
-# _C.MODEL.DEVICE = "cpu"
+# _C.MODEL.DEVICE = "cuda"
+_C.MODEL.DEVICE = "cpu"
 # match default boxes to any ground truth with jaccard overlap higher than a threshold (0.5)
 _C.MODEL.THRESHOLD = 0.5
 _C.MODEL.NUM_CLASSES = 21
