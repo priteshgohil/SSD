@@ -69,6 +69,7 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
     total_eval_time = int(time.time() - start_eval_time)
     total_time_str = str(datetime.timedelta(seconds=total_eval_time))
     logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, total_eval_time / i+1, i+1))
+    logger.info("Total inference time: {} second".format(total_eval_time))
     if summary_writer:
         global_step = iteration
         summary_writer.add_scalar('val_losses/total_loss', sum(total_loss) / len(total_loss), global_step=global_step)
