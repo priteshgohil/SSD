@@ -12,6 +12,12 @@ This repository implements [SSD (Single Shot MultiBox Detector)](https://arxiv.o
 | :-----------: |:-------------:| :------:|
 | ![losses](figures/losses.png) | ![lr](figures/lr.png) | ![metric](figures/metrics.png) |
 
+## Updates
+- [x] Add validation loss during training
+- [ ] Plot images fed to the network during testing and training
+- [ ] Plot images after detection
+- [ ] Save best model with epoch number
+
 ## Highlights
 
 - **PyTorch 1.0**: Support PyTorch 1.0 or higher.
