@@ -8,7 +8,7 @@ def build_transforms(cfg, is_train=True):
         transform = [
             ConvertFromInts(), # Convert img to float32
             PhotometricDistort(), # Random HSV on image
-            #Expand(cfg.INPUT.PIXEL_MEAN), # increase image size padding with mean value
+            Expand(cfg.INPUT.PIXEL_MEAN), # increase image size padding with mean value
             RandomSampleCrop(), # Crop image
             RandomMirror(), # Flip right-left randomly
             ToPercentCoords(), # Normalize BBox Cords

@@ -16,5 +16,8 @@ class SSDDetector(nn.Module):
         detections, detector_losses = self.box_head(features, targets)
         if self.training:
             return detector_losses
-        # return detections, detector_losses
-        return detections # For inference
+        if detector_losses is None: # Fix to demo.py and logging val loss
+            return detections
+        else:
+            return detections, detector_losses
+        # return detections # For inference

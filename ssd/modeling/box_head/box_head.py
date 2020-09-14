@@ -24,8 +24,7 @@ class SSDBoxHead(nn.Module):
         if self.training:
             return self._forward_train(cls_logits, bbox_pred, targets)
         else:
-            # return self._forward_test(cls_logits, bbox_pred, targets)
-            return self._forward_inference(cls_logits, bbox_pred)
+            return self._forward_test(cls_logits, bbox_pred, targets)
 
     def _forward_train(self, cls_logits, bbox_pred, targets):
         gt_boxes, gt_labels = targets['boxes'], targets['labels']
@@ -39,12 +38,14 @@ class SSDBoxHead(nn.Module):
 
     def _forward_test(self, cls_logits, bbox_pred, targets):
         # Add loss
-        gt_boxes, gt_labels = targets['boxes'], targets['labels']
-        reg_loss, cls_loss = self.loss_evaluator(cls_logits, bbox_pred, gt_labels, gt_boxes)
-        loss_dict = dict(
-            reg_loss=reg_loss,
-            cls_loss=cls_loss,
-        )
+        loss_dict = None
+        if targets is not None:
+            gt_boxes, gt_labels = targets['boxes'], targets['labels']
+            reg_loss, cls_loss = self.loss_evaluator(cls_logits, bbox_pred, gt_labels, gt_boxes)
+            loss_dict = dict(
+                reg_loss=reg_loss,
+                cls_loss=cls_loss,
+            )
         # Convert detections
         if self.priors is None:
             self.priors = PriorBox(self.cfg)().to(bbox_pred.device)
@@ -56,15 +57,3 @@ class SSDBoxHead(nn.Module):
         detections = (scores, boxes)
         detections = self.post_processor(detections)
         return detections, loss_dict
-
-    def _forward_inference(self, cls_logits, bbox_pred):
-        if self.priors is None:
-            self.priors = PriorBox(self.cfg)().to(bbox_pred.device)
-        scores = F.softmax(cls_logits, dim=2)
-        boxes = box_utils.convert_locations_to_boxes(
-            bbox_pred, self.priors, self.cfg.MODEL.CENTER_VARIANCE, self.cfg.MODEL.SIZE_VARIANCE
-        )
-        boxes = box_utils.center_form_to_corner_form(boxes)
-        detections = (scores, boxes)
-        detections = self.post_processor(detections)
-        return detections, {}

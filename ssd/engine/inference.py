@@ -43,7 +43,7 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
     total_loss=[]
     logger = logging.getLogger("SSD.inference")
     start_eval_time = time.time()  # Record evaluation time
-    for i, batch in enumerate(tqdm(data_loader)):
+    for num, batch in enumerate(tqdm(data_loader)):
         # per_iteration_time = time.time()
         images, targets, image_ids = batch
         cpu_device = torch.device("cpu")
@@ -66,10 +66,11 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
         results_dict.update(
             {img_id: result for img_id, result in zip(image_ids, outputs)}
         )
-    total_eval_time = int(time.time() - start_eval_time)
+    end_eval_time = time.time()
+    total_eval_time = int(end_eval_time- start_eval_time)
     total_time_str = str(datetime.timedelta(seconds=total_eval_time))
-    logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, total_eval_time / i+1, i+1))
-    logger.info("Total inference time: {} second".format(total_eval_time))
+    logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, ((end_eval_time-start_eval_time)/num+1), num+1))
+    logger.info("Total inference time: {} seconds".format(total_eval_time))
     if summary_writer:
         global_step = iteration
         summary_writer.add_scalar('val_losses/total_loss', sum(total_loss) / len(total_loss), global_step=global_step)
@@ -79,13 +80,17 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
 
 
 def inference(model, data_loader, dataset_name, device, output_folder=None, use_cached=False, **kwargs):
+    summary_writer = None
+    iteration = None
+    if 'summary_writer' in kwargs.keys():
+        summary_writer = kwargs['summary_writer']
+        del kwargs['summary_writer']
+        iteration = kwargs['iteration']
+
     dataset = data_loader.dataset
     logger = logging.getLogger("SSD.inference")
     logger.info("Evaluating {} dataset({} images):".format(dataset_name, len(dataset)))
     predictions_path = os.path.join(output_folder, 'predictions.pth')
-    summary_writer = kwargs['summary_writer']
-    del kwargs['summary_writer']
-    iteration = kwargs['iteration']
     if use_cached and os.path.exists(predictions_path):
         logger.info("Using saved model predictions.pth at {}:".format(output_folder))
         predictions = torch.load(predictions_path, map_location='cpu')
