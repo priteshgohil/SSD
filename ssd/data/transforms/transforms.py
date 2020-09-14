@@ -117,6 +117,8 @@ class ToAbsoluteCoords(object):
 # Normalize BBox Cords
 class ToPercentCoords(object):
     def __call__(self, image, boxes=None, labels=None):
+        if boxes is None: # boxes are none when testing only with images
+            return image, boxes, labels
         height, width, channels = image.shape
         boxes[:, 0] /= width
         boxes[:, 2] /= width
@@ -131,8 +133,7 @@ class Resize(object):
         self.size = size
 
     def __call__(self, image, boxes=None, labels=None):
-        image = cv2.resize(image, (self.size,
-                                   self.size))
+        image = cv2.resize(image, (self.size, self.size))
         return image, boxes, labels
 
 

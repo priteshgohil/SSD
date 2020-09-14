@@ -38,12 +38,14 @@ class SSDBoxHead(nn.Module):
 
     def _forward_test(self, cls_logits, bbox_pred, targets):
         # Add loss
-        gt_boxes, gt_labels = targets['boxes'], targets['labels']
-        reg_loss, cls_loss = self.loss_evaluator(cls_logits, bbox_pred, gt_labels, gt_boxes)
-        loss_dict = dict(
-            reg_loss=reg_loss,
-            cls_loss=cls_loss,
-        )
+        loss_dict = None
+        if targets is not None:
+            gt_boxes, gt_labels = targets['boxes'], targets['labels']
+            reg_loss, cls_loss = self.loss_evaluator(cls_logits, bbox_pred, gt_labels, gt_boxes)
+            loss_dict = dict(
+                reg_loss=reg_loss,
+                cls_loss=cls_loss,
+            )
         # Convert detections
         if self.priors is None:
             self.priors = PriorBox(self.cfg)().to(bbox_pred.device)

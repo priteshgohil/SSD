@@ -1,0 +1,22 @@
+name: pytorch-ssd-lfc
+channels:
+  - conda-forge
+  - ioam
+  - soumith
+  - pytorch
+dependencies:
+  - python>=3.6
+  - numpy==1.17
+  - pytorch>=1.5
+  - torchvision>=0.4.0
+  - scikit-learn
+  - tqdm
+  - pillow
+  - opencv>=4.1
+  - scikit-image
+  - tensorboardX
+  - ffmpeg
+  - yacs
+  - pip
+  - pip: 
+    - Vizer
