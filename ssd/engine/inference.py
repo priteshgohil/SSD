@@ -43,7 +43,7 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
     total_loss=[]
     logger = logging.getLogger("SSD.inference")
     start_eval_time = time.time()  # Record evaluation time
-    for num, batch in enumerate(tqdm(data_loader)):
+    for i, batch in enumerate(tqdm(data_loader)):
         # per_iteration_time = time.time()
         images, targets, image_ids = batch
         cpu_device = torch.device("cpu")
@@ -66,10 +66,9 @@ def compute_on_dataset(model, data_loader, device, summary_writer, iteration):
         results_dict.update(
             {img_id: result for img_id, result in zip(image_ids, outputs)}
         )
-    end_eval_time = time.time()
-    total_eval_time = int(end_eval_time- start_eval_time)
+    total_eval_time = int(time.time()- start_eval_time)
     total_time_str = str(datetime.timedelta(seconds=total_eval_time))
-    logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, ((end_eval_time-start_eval_time)/num+1), num+1))
+    logger.info("Total inference time: {} (Avg. {:.4f} s / it) & total batch: {}".format(total_time_str, total_eval_time/(i+1), i+1))
     logger.info("Total inference time: {} seconds".format(total_eval_time))
     if summary_writer:
         global_step = iteration
