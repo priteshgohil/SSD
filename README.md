@@ -14,6 +14,7 @@ This repository implements [SSD (Single Shot MultiBox Detector)](https://arxiv.o
 
 ## Updates
 - [x] Add validation loss during training
+- [ ] Support transfer learning (ex: load coco weights and freeze backbone weigts + train only box_head) 
 - [ ] Plot images fed to the network during testing and training
 - [ ] Plot images after detection
 - [ ] Save best model with epoch number
